@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — AI Vocal Remover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --card: #1a1a26;
+  --border: rgba(255,255,255,0.06);
+  --text: #e4e4ec;
+  --text-dim: #8a8a9e;
+  --accent: #7c5cfc;
+  --accent-glow: rgba(124,92,252,0.15);
+  --gradient-start: #7c5cfc;
+  --gradient-end: #c74ceb;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+}
+
+html { scroll-behavior: smooth }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* top gradient bar */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end), var(--gradient-start));
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+  z-index: 100;
+}
+
+@keyframes shimmer {
+  0%,100% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+}
+
+/* subtle bg noise */
+.noise {
+  position: fixed;
+  inset: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+}
+
+/* hero */
+.hero {
+  text-align: center;
+  margin-bottom: 56px;
+  animation: fadeUp 0.6s ease-out;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: var(--accent-glow);
+  border: 1px solid rgba(124,92,252,0.2);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-bottom: 20px;
+}
+
+.hero-badge svg { width: 14px; height: 14px }
+
+h1 {
+  font-size: clamp(28px, 5vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, #fff 0%, var(--text-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+
+.hero p {
+  color: var(--text-dim);
+  font-size: 15px;
+}
+
+.effective-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+/* table of contents */
+.toc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 48px;
+  animation: fadeUp 0.6s ease-out 0.1s both;
+}
+
+.toc-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+
+.toc ol {
+  list-style: none;
+  counter-reset: toc;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 24px;
+}
+
+@media (max-width: 580px) { .toc ol { grid-template-columns: 1fr } }
+
+.toc li {
+  counter-increment: toc;
+}
+
+.toc a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 6px 0;
+  transition: color 0.2s;
+}
+
+.toc a::before {
+  content: counter(toc, decimal-leading-zero);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 20px;
+}
+
+.toc a:hover { color: var(--accent) }
+
+/* sections */
+section {
+  margin-bottom: 44px;
+  animation: fadeUp 0.5s ease-out both;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+h2 .sec-num {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-glow);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 22px 0 8px;
+  color: #d6d6e6;
+}
+
+p { margin-bottom: 12px; font-size: 15px; color: var(--text-dim) }
+
+ul, ol { margin: 8px 0 16px 20px; color: var(--text-dim); font-size: 15px }
+li { margin-bottom: 6px }
+li::marker { color: var(--accent) }
+
+strong { color: var(--text); font-weight: 500 }
+
+/* info cards */
+.info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+.info-card.green { border-left: 3px solid var(--green) }
+.info-card.amber { border-left: 3px solid var(--amber) }
+.info-card.accent { border-left: 3px solid var(--accent) }
+.info-card.red { border-left: 3px solid var(--red) }
+
+.info-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.info-card.green .info-card-title { color: var(--green) }
+.info-card.amber .info-card-title { color: var(--amber) }
+.info-card.accent .info-card-title { color: var(--accent) }
+.info-card.red .info-card-title { color: var(--red) }
+
+.info-card p { margin-bottom: 4px; font-size: 14px }
+
+/* data table */
+.data-table-wrapper {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--text-dim);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+  vertical-align: top;
+}
+
+.data-table tr:last-child td { border-bottom: none }
+
+.data-table tbody tr {
+  transition: background 0.15s;
+}
+
+.data-table tbody tr:hover { background: rgba(124,92,252,0.04) }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-green { background: rgba(52,211,153,0.12); color: var(--green) }
+.badge-amber { background: rgba(251,191,36,0.12); color: var(--amber) }
+.badge-accent { background: var(--accent-glow); color: var(--accent) }
+
+/* footer */
+footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+footer p {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+footer a:hover { text-decoration: underline }
+
+/* links */
+a { color: var(--accent); text-decoration: none }
+a:hover { text-decoration: underline }
+
+/* responsive */
+@media (max-width: 480px) {
+  .container { padding: 40px 16px 60px }
+  h2 { font-size: 18px }
+}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="container">
+
+<header class="hero">
+  <div class="hero-badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Privacy &amp; Security
+  </div>
+  <h1>Privacy Policy</h1>
+  <p>AI Vocal Remover — Stem Separator &amp; BPM Detector</p>
+  <div class="effective-date">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Effective: October 2, 2026
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="toc-title">Contents</div>
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#audio-processing">Audio Processing Architecture</a></li>
+    <li><a href="#data-we-collect">Data We Collect &amp; Process</a></li>
+    <li><a href="#permissions">Device Permissions</a></li>
+    <li><a href="#third-party">Third-Party Processors</a></li>
+    <li><a href="#advertising">Advertising &amp; UMP Consent</a></li>
+    <li><a href="#retention-security">Storage, Security &amp; Retention</a></li>
+    <li><a href="#account-deletion">Account &amp; Data Deletion</a></li>
+    <li><a href="#your-rights">Your Rights</a></li>
+    <li><a href="#children">Children's Privacy</a></li>
+    <li><a href="#changes">Changes to This Policy</a></li>
+    <li><a href="#contact">Contact Us</a></li>
+  </ol>
+</nav>
+
+<section id="overview">
+  <h2><span class="sec-num">01</span> Overview</h2>
+  <p>AI Vocal Remover ("the App", "we", "our") is developed and operated by <strong>Appvexis</strong>. This Privacy Policy outlines what information is collected, how it is processed, and how your privacy rights are safeguarded when using the application.</p>
+  <p>We respect your creative work and personal information. Our architecture is built around privacy-by-design: on-device separation keeps your media on your phone without touching any server, while cloud processing handles files strictly in temporary, isolated sandboxes and purges them according to a deterministic schedule.</p>
+</section>
+
+<section id="audio-processing">
+  <h2><span class="sec-num">02</span> Audio Processing Architecture</h2>
+  <p>The App provides two distinct processing modes with fundamentally different privacy models:</p>
+
+  <div class="info-card green">
+    <div class="info-card-title">1. On-Device Mode (100% Local &amp; Private)</div>
+    <p>When you select 2-stem, 4-stem, or 5-stem offline separation, inference runs entirely on your device using LiteRT (TensorFlow Lite) models accelerated by your device's GPU or CPU.</p>
+    <ul style="margin-top:8px">
+      <li><strong>Zero audio upload:</strong> Your selected audio or video file never leaves your device.</li>
+      <li><strong>No account required:</strong> You can process tracks, export stems, and manage offline results without signing in.</li>
+      <li><strong>Auxiliary analysis:</strong> BPM detection, musical key detection, and pitch/tempo shifting operate 100% locally on your device with no network transmission.</li>
+    </ul>
+  </div>
+
+  <div class="info-card amber">
+    <div class="info-card-title">2. Studio Cloud Mode (Ephemeral Server Processing)</div>
+    <p>When you explicitly opt into Cloud processing for high-fidelity separation models:</p>
+    <ul style="margin-top:8px">
+      <li><strong>Encrypted transit:</strong> Media is uploaded exclusively over HTTPS/TLS connections to our private storage.</li>
+      <li><strong>Isolated computation:</strong> Cloud separation executes in ephemeral, sandboxed GPU worker environments.</li>
+      <li><strong>Input deletion:</strong> Uploaded source audio is automatically deleted within 24 hours of upload/completion.</li>
+      <li><strong>Result download window:</strong> Separated stem artifacts are retained in private encrypted cloud storage for up to 48 hours so you can listen, preview, and download them to your device, after which they are permanently deleted by automated cleanup routines.</li>
+    </ul>
+  </div>
+
+  <div class="info-card green">
+    <div class="info-card-title">Our Strict Guarantee: No AI Model Training</div>
+    <p>We <strong>never</strong> use your audio files or extracted stems to train, fine-tune, or benchmark public or proprietary artificial intelligence models. Your media is processed exclusively to deliver the separation result you requested.</p>
+  </div>
+</section>
+
+<section id="data-we-collect">
+  <h2><span class="sec-num">03</span> Data We Collect &amp; Process</h2>
+  <p>We adhere to strict data minimization principles and collect only data essential to app functionality, billing, and account management:</p>
+
+  <h3>A. Account Information (Voluntary Google Sign-In)</h3>
+  <p>If you choose to sign in to access cloud processing or preserve cross-device entitlements, we authenticate you via Google Sign-In (Credential Manager) and receive:</p>
+  <div class="data-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr><th>Data Field</th><th>Purpose</th><th>Retention</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Google Account ID (Subject ID)</td><td>Unique account identifier</td><td>Until account deletion</td></tr>
+        <tr><td>Email Address</td><td>Account identification &amp; support</td><td>Until account deletion</td></tr>
+        <tr><td>Display Name &amp; Profile Picture</td><td>In-app profile display</td><td>Until account deletion</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>B. Entitlements &amp; Billing Data</h3>
+  <p>In-app purchases and subscriptions are handled directly by Google Play. We do not receive, store, or process your credit card, debit card, or banking details. We record:</p>
+  <ul>
+    <li><strong>Google Play purchase tokens and order IDs</strong> to verify entitlements with the Google Play Developer API and prevent fraud or replay attacks.</li>
+    <li><strong>Cloud seconds balance and ledger entries</strong> tracking credited processing seconds from active subscriptions.</li>
+  </ul>
+
+  <h3>C. Technical &amp; Diagnostic Data</h3>
+  <ul>
+    <li><strong>Cryptographic hash (SHA-256):</strong> Generated locally from audio files to check if identical tracks were already processed (memoized preflight), preventing unnecessary duplicate uploads.</li>
+    <li><strong>Sanitized error codes:</strong> High-level error statuses (e.g., unsupported format, network timeout) are logged to diagnose job failures without collecting audio waveforms or stack traces containing personal data.</li>
+    <li><strong>Rate-limiting identifiers:</strong> Public API requests use a pseudonymized hash to prevent abuse; raw IP addresses are not stored in our database.</li>
+  </ul>
+
+  <div class="info-card red">
+    <div class="info-card-title">Data We Never Collect</div>
+    <p>We do not collect physical location data, phone contacts, address books, biometric data, camera images, or microphone recordings. We do not use continuous background behavioral tracking SDKs.</p>
+  </div>
+</section>
+
+<section id="permissions">
+  <h2><span class="sec-num">04</span> Device Permissions</h2>
+  <p>The Android operating system requires specific runtime permissions for certain app features. Each permission is requested only when required:</p>
+
+  <div class="data-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr><th>Permission</th><th>Why It Is Needed</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>READ_MEDIA_AUDIO / READ_MEDIA_VIDEO</strong><br>(Android 13+)</td>
+          <td>Enables you to select the audio or video track from your device that you wish to separate or analyze. The app accesses only the specific files you pick.</td>
+        </tr>
+        <tr>
+          <td><strong>READ_EXTERNAL_STORAGE</strong><br>(Android 12 and below)</td>
+          <td>Allows file selection on older Android versions.</td>
+        </tr>
+        <tr>
+          <td><strong>FOREGROUND_SERVICE &amp; MEDIA_PROCESSING</strong></td>
+          <td>Keeps audio separation, model downloading, and stem export running in the background without being killed by Android battery optimization.</td>
+        </tr>
+        <tr>
+          <td><strong>POST_NOTIFICATIONS</strong><br>(Android 13+)</td>
+          <td>Displays a progress notification during audio processing and notifies you when separation completes.</td>
+        </tr>
+        <tr>
+          <td><strong>WAKE_LOCK</strong></td>
+          <td>Ensures your device CPU remains awake while executing local AI model inference.</td>
+        </tr>
+        <tr>
+          <td><strong>INTERNET &amp; ACCESS_NETWORK_STATE</strong></td>
+          <td>Enables cloud model separation, Google Sign-In authentication, Google Play entitlement validation, and ad display (where consented).</td>
+        </tr>
+        <tr>
+          <td><strong>AD_ID</strong> (Advertising ID)</td>
+          <td>Used by the Google Mobile Ads SDK to serve ads according to your consent preferences.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="third-party">
+  <h2><span class="sec-num">05</span> Third-Party Processors</h2>
+  <p>We partner with trusted third-party providers who act as data processors under strict security and confidentiality obligations:</p>
+
+  <div class="data-table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr><th>Provider</th><th>Role</th><th>Data Handled</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Google LLC</strong></td>
+          <td>Authentication, In-App Billing &amp; Ads</td>
+          <td>Google Sign-In tokens, Play purchase tokens, Advertising ID, UMP consent choices. (<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a>)</td>
+        </tr>
+        <tr>
+          <td><strong>Cloudflare, Inc.</strong></td>
+          <td>API Gateway, Database &amp; Object Storage</td>
+          <td>Encrypted cloud audio input/output storage (R2), account session tokens, job metadata (D1). Data encrypted in transit and at rest. (<a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">Privacy Policy</a>)</td>
+        </tr>
+        <tr>
+          <td><strong>Modal Labs</strong></td>
+          <td>GPU Cloud Computing</td>
+          <td>Ephemeral execution of AI stem separation models in isolated sandboxes. Audio is purged immediately upon completion.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="advertising">
+  <h2><span class="sec-num">06</span> Advertising &amp; UMP Consent Choices</h2>
+  <p>To support free features, the App integrates Google Mobile Ads (AdMob). We implement the official <strong>Google User Messaging Platform (UMP)</strong> SDK, which complies with the IAB Europe Transparency and Consent Framework (TCF v2.2):</p>
+  <ul>
+    <li><strong>Consent before initialization:</strong> In the European Economic Area (EEA), the UK, and Switzerland, ad measurement and SDK initialization are paused until you specify your consent preferences.</li>
+    <li><strong>Personalized vs. Non-personalized:</strong> If you decline consent for personalized advertising, Google AdMob serves non-personalized ads using contextual signals only.</li>
+    <li><strong>Ad-free options:</strong> Users who purchase the "Offline Ad-Free Lifetime" upgrade have rewarded ads removed from offline workflows. Active paid cloud subscribers receive an ad-free experience while entitled.</li>
+    <li><strong>Changing your choices anytime:</strong> You have the right to revisit and update your consent choices at any time. Open the in-app <strong>Settings &gt; Ad privacy choices</strong> to adjust your advertising preferences.</li>
+  </ul>
+</section>
+
+<section id="retention-security">
+  <h2><span class="sec-num">07</span> Storage, Security &amp; Retention</h2>
+  <p>We implement industry-standard cryptographic and operational safeguards to protect your data:</p>
+  <ul>
+    <li><strong>Android Keystore encryption:</strong> Local session tokens are encrypted using AES-256-GCM via Android's EncryptedSharedPreferences.</li>
+    <li><strong>TLS encryption:</strong> All data in transit between the client, Cloudflare API, and GPU compute is protected with modern TLS encryption.</li>
+    <li><strong>Access control:</strong> Database access is strictly authenticated; users can only query, stream, or delete their own job records and artifacts.</li>
+    <li><strong>Deterministic cleanup schedule:</strong>
+      <ul>
+        <li>Cloud input audio: Automatically purged within 24 hours.</li>
+        <li>Cloud output stems: Automatically purged within 48 hours.</li>
+        <li>Account metadata: Maintained until you request account deletion.</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<section id="account-deletion">
+  <h2><span class="sec-num">08</span> Account &amp; Data Deletion</h2>
+  <p>In compliance with Google Play's User Data &amp; Account Deletion policies, you have complete control over your account and personal records:</p>
+  <div class="info-card accent">
+    <div class="info-card-title">How to Delete Your Account</div>
+    <p>You can request the permanent deletion of your account and all associated data at any time through either of the following methods:</p>
+    <ol style="margin: 8px 0 12px 20px">
+      <li><strong>In-App:</strong> Go to <strong>Settings</strong>, tap your account profile, and select <strong>Sign Out</strong>.</li>
+      <li><strong>Direct Deletion Request:</strong> Send an email to <a href="mailto:letsdevelop07@gmail.com">letsdevelop07@gmail.com</a> with the subject <code>Delete Account - AI Vocal Remover</code> from the Google email associated with your account.</li>
+    </ol>
+    <p><strong>What is deleted:</strong> We permanently delete your user profile, email association, session records, cloud job logs, stem download records, and balance entries within 30 days of receiving your request. (Anonymous order tokens required for accounting audit compliance may be retained where required by law).</p>
+  </div>
+</section>
+
+<section id="your-rights">
+  <h2><span class="sec-num">09</span> Your Privacy Rights</h2>
+  <p>Under applicable data protection regulations (including GDPR, UK Data Protection Act, and CCPA/CPRA), you have the right to:</p>
+  <ul>
+    <li><strong>Access &amp; Portability:</strong> Request a copy of the personal information we hold about you.</li>
+    <li><strong>Rectification:</strong> Request correction of inaccurate information.</li>
+    <li><strong>Erasure:</strong> Request deletion of your personal data as outlined in Section 08.</li>
+    <li><strong>Withdraw Consent:</strong> Revoke advertising consent via in-app Settings or disconnect your Google account at any time.</li>
+    <li><strong>Opt-Out of Sale:</strong> We do <strong>not</strong> sell your personal information or audio files.</li>
+  </ul>
+</section>
+
+<section id="children">
+  <h2><span class="sec-num">10</span> Children's Privacy</h2>
+  <p>AI Vocal Remover is not intended for use by children under the age of 13 (or under 16 in the EEA). We do not knowingly collect personal information from children. If you become aware that a child has provided us with personal data, please contact us immediately, and we will take steps to delete that information.</p>
+</section>
+
+<section id="changes">
+  <h2><span class="sec-num">11</span> Changes to This Policy</h2>
+  <p>We may update this Privacy Policy from time to time to reflect improvements in our privacy practices or regulatory requirements. We will notify you of any material changes by updating the "Effective Date" at the top of this policy and posting an in-app notice when appropriate.</p>
+</section>
+
+<section id="contact">
+  <h2><span class="sec-num">12</span> Contact Us</h2>
+  <p>If you have questions, comments, or requests regarding this Privacy Policy or our privacy practices, please contact us:</p>
+  <div class="info-card accent">
+    <p><strong>Developer:</strong> Appvexis</p>
+    <p><strong>Email:</strong> <a href="mailto:letsdevelop07@gmail.com">letsdevelop07@gmail.com</a></p>
+    <p><strong>Application:</strong> AI Vocal Remover — Stem Separator &amp; BPM Detector</p>
+    <p><strong>Package ID:</strong> com.appvexis.aivocalremover</p>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Appvexis. All rights reserved.</p>
+  <p style="margin-top:8px">AI Vocal Remover — Stem Separator &amp; BPM Detector</p>
+</footer>
+
+</div>
+</body>
+</html>
